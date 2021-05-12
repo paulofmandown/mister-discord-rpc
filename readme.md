@@ -11,6 +11,8 @@ on the active core's relevant recents file in `/media/fat/config/`.
 
 ## Running
 
+Grab the latest binary from the [releases page](https://github.com/paulofmandown/mister-discord-rpc/releases)
+
 You can run MiSTerDiscordRPC.exe by double-clicking or running from a cmd prompt.
 
 When running from the cmd prompt you have the option to provide the MiSTer's hostname via argument:
