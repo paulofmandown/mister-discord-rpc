@@ -30,15 +30,6 @@ namespace MiSTerDiscordRPC {
                 Address = GetInput("What is the MiSTer's Address?");
             }
             MiSTerClient = new MiSTerSSHClient(Address);
-            DiscordClient = new DiscordRpcClient(DiscordAppId);
-            DiscordClient.OnReady += (sender, e) => {};
-            DiscordClient.OnPresenceUpdate += (sender, e) => {};
-            try {
-                DiscordClient.Initialize();
-            } catch (Exception e) {
-                Console.WriteLine($"Failed to connect to discord\nError: {e.Message}");
-                return;
-            }
         }
 
         private void Run() {
@@ -46,16 +37,18 @@ namespace MiSTerDiscordRPC {
                 while (true) {
                     var presenceData = MiSTerClient.GetMiSTerPresenceData();
                     if (presenceData == null || presenceData.Core == null || presenceData.Core == "") {
-                        DiscordClient.ClearPresence();
+                        GetDiscordClient().ClearPresence();
+                    } else {
+                        UpdateDiscordPresence(presenceData);
                     }
-                    UpdateDiscordPresence(presenceData);
                     Thread.Sleep(5000);
                 }
             } catch (Exception e) {
                 Console.WriteLine($"Runtime error: {e.Message}");
             } finally {
-                DiscordClient.ClearPresence();
-                DiscordClient.Dispose();
+                var c = GetDiscordClient();
+                c.ClearPresence();
+                c.Dispose();
                 MiSTerClient.Dispose();
             }
         }
@@ -68,11 +61,31 @@ namespace MiSTerDiscordRPC {
             return Answer;
         }
 
+        private void ResetLasts() {
+            LastCore = "";
+            LastRom = "";
+        }
+
+        private DiscordRpcClient GetDiscordClient() {
+            if (DiscordClient == null || !DiscordClient.IsInitialized || DiscordClient.IsDisposed) {
+                DiscordClient = new DiscordRpcClient(DiscordAppId);
+                DiscordClient.OnReady += (sender, e) => {};
+                DiscordClient.OnPresenceUpdate += (sender, e) => {};
+                try {
+                    DiscordClient.Initialize();
+                } catch (Exception e) {
+                    Console.WriteLine($"Failed to connect to discord\nError: {e.Message}");
+                    return null;
+                }
+            }
+            return DiscordClient;
+        }
+
         private void UpdateDiscordPresence(MiSTerPresenceData data) {
             try {
                 if (data.Rom != LastRom || data.Core != LastCore) {
                     Console.WriteLine($"Sending new presence: Playing {data.Rom} on {data.Core}");
-                    DiscordClient.SetPresence(data.GetPresence());
+                    GetDiscordClient().SetPresence(data.GetPresence());
                     LastRom = data.Rom;
                     LastCore = data.Core;
                 }
