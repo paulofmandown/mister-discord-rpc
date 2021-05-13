@@ -32,10 +32,6 @@ What is the MiSTer's Address?
 
 ## Notes / Known Issues
 
-- I don't think this will work with MiSTer SAM, the attract mode suite. SAM works by using a fixed
-  file name to link to the random rom to play. So it will likely always show that fixed name instead
-  of the rom that is playing.
-
 - If Discord closes while MiSTerDiscordRPC is running and re-opens, presence will be lost until a
   new Core or Rom is loaded or until MiSTerDiscordRPC is restarted. I'm open to suggestions on how
   to cleanly address that.

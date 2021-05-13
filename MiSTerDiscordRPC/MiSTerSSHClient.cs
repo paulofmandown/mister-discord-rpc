@@ -28,6 +28,9 @@ namespace MiSTerDiscordRPC {
             } else {
                 data.Rom = "";
             }
+            if (data.Rom == "~~~") {
+                return GetSAMPresence();
+            }
             return data;
         }
 
@@ -76,10 +79,17 @@ namespace MiSTerDiscordRPC {
             } else {
                 var latestFile = GetLatestRecentsFile();
                 if (!latestFile.Equals("")) {
-                    romname = Path.GetFileNameWithoutExtension(GetClient().CreateCommand($"strings {latestFile}").Execute().Split('\n')[2]);
+                    romname = Path.GetFileNameWithoutExtension(GetClient().CreateCommand($"strings {latestFile}").Execute().Split('\n')[1]);
                 }
             }
             return romname;
+        }
+
+        private MiSTerPresenceData GetSAMPresence() {
+            var data = new MiSTerPresenceData();
+            data.SuperAttractMode = true;
+            data.Rom = GetClient().CreateCommand("cat /tmp/SAM_Game.txt").Execute().Trim();
+            return data;
         }
     }
 }

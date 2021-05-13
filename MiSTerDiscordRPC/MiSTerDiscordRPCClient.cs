@@ -36,7 +36,8 @@ namespace MiSTerDiscordRPC {
             try {
                 while (true) {
                     var presenceData = MiSTerClient.GetMiSTerPresenceData();
-                    if (presenceData == null || presenceData.Core == null || presenceData.Core == "") {
+                    var coreIsEmpty = presenceData == null || presenceData.Core == null || presenceData.Core == "";
+                    if (coreIsEmpty && !presenceData.SuperAttractMode) {
                         GetDiscordClient().ClearPresence();
                     } else {
                         UpdateDiscordPresence(presenceData);
@@ -84,7 +85,11 @@ namespace MiSTerDiscordRPC {
         private void UpdateDiscordPresence(MiSTerPresenceData data) {
             try {
                 if (data.Rom != LastRom || data.Core != LastCore) {
-                    Console.WriteLine($"Sending new presence: Playing {data.Rom} on {data.Core}");
+                    if (data.SuperAttractMode) {
+                        Console.WriteLine($"Sending new presence: Showing {data.Rom} in Super Attract Mode");
+                    } else {
+                        Console.WriteLine($"Sending new presence: Playing {data.Rom} on {data.Core}");
+                    }
                     GetDiscordClient().SetPresence(data.GetPresence());
                     LastRom = data.Rom;
                     LastCore = data.Core;
