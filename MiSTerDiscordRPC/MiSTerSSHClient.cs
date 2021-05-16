@@ -19,14 +19,14 @@ namespace MiSTerDiscordRPC {
         public MiSTerPresenceData GetMiSTerPresenceData() {
             var data = new MiSTerPresenceData();
             var processes = GetCoreProcesses();
-            if (processes == null || processes == "") {
+            if (string.IsNullOrEmpty(processes)) {
                 return null;
             }
             data.Core = GetCoreName(processes);
             if (data.Core != "menu") {
                 data.Rom = GetLatestRomName(processes);
             } else {
-                data.Rom = "";
+                data.Rom = string.Empty;
             }
             return data;
         }
@@ -47,7 +47,7 @@ namespace MiSTerDiscordRPC {
 
         private string GetCoreProcesses() {
             var processes = GetClient().CreateCommand("ps aux | grep [r]bf").Execute();
-            if (processes == null || processes == "") {
+            if (string.IsNullOrEmpty(processes)) {
                 return null;
             }
             return processes;
@@ -70,13 +70,13 @@ namespace MiSTerDiscordRPC {
         }
 
         private string GetLatestRomName(string processes) {
-            var romname = "";
+            var romname = string.Empty;
             if (processes.Contains(".mra")) {
-                romname = new Stack<string>(processes.Split("/")).Pop().Replace(".mra", "").Trim();
+                romname = new Stack<string>(processes.Split("/")).Pop().Replace(".mra", string.Empty).Trim();
             } else {
                 var latestFile = GetLatestRecentsFile();
-                if (!latestFile.Equals("")) {
-                    romname = Path.GetFileNameWithoutExtension(GetClient().CreateCommand($"strings {latestFile}").Execute().Split('\n')[2]);
+                if (!string.IsNullOrEmpty(latestFile)) {
+                    romname = Path.GetFileNameWithoutExtension(GetClient().CreateCommand($"strings {latestFile}").Execute().Split('\n')[1]);
                 }
             }
             return romname;

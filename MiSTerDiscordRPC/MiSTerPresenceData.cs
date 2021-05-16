@@ -9,7 +9,7 @@ namespace MiSTerDiscordRPC {
         public RichPresence GetPresence() {
             return new RichPresence {
                 Details = "Core - " + Core,
-                State = Rom.Equals("") ? "Idling" : "Playing - " + Rom,
+                State = string.IsNullOrEmpty(Rom) ? "Idling" : "Playing - " + Rom,
                 Timestamps = new Timestamps(DateTime.UtcNow),
                 Assets = new Assets()
                 {

@@ -26,7 +26,7 @@ namespace MiSTerDiscordRPC {
         }
 
         private void Start() {
-            if (Address == null || Address == "") {
+            if (string.IsNullOrEmpty(Address)) {
                 Address = GetInput("What is the MiSTer's Address?");
             }
             MiSTerClient = new MiSTerSSHClient(Address);
@@ -36,7 +36,7 @@ namespace MiSTerDiscordRPC {
             try {
                 while (true) {
                     var presenceData = MiSTerClient.GetMiSTerPresenceData();
-                    if (presenceData == null || presenceData.Core == null || presenceData.Core == "") {
+                    if (presenceData == null || string.IsNullOrEmpty(presenceData.Core)) {
                         GetDiscordClient().ClearPresence();
                     } else {
                         UpdateDiscordPresence(presenceData);
@@ -62,8 +62,8 @@ namespace MiSTerDiscordRPC {
         }
 
         private void ResetLasts() {
-            LastCore = "";
-            LastRom = "";
+            LastCore = string.Empty;
+            LastRom = string.Empty;
         }
 
         private DiscordRpcClient GetDiscordClient() {
