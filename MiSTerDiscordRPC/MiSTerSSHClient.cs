@@ -1,5 +1,4 @@
 using Renci.SshNet;
-using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -54,29 +53,39 @@ namespace MiSTerDiscordRPC {
         }
 
         private string GetCoreName(string processes) {
-            var corename = new Stack<string>(processes.Split()[8].Split("/")).Pop().Replace(".rbf", "").Trim();
-            if (corename.Contains("_")) {
-                corename = corename.Split("_")[0];
+            var corename = "";
+            var processStack = new Stack<string>(processes.Split()[8].Split("/"));
+            if (processStack.Count > 0) {
+                corename = processStack.Pop().Replace(".rbf", "").Trim();
+                if (corename.Contains("_")) {
+                    corename = corename.Split("_")[0];
+                }
             }
             return corename;
         }
 
         private string GetLatestRecentsFile() {
+            var filename = "";
             string cmd = "ls -srt /media/fat/config/*recent* -1";
             Stack<string> filenames = new Stack<string>(GetClient().CreateCommand(cmd).Execute().Split('\n'));
-            filenames.Pop();
-            string filename = filenames.Pop();
+            if (filenames.Count > 0) {
+                filenames.Pop();
+                filename = filenames.Pop();
+            }
             return filename;
         }
 
         private string GetLatestRomName(string processes) {
             var romname = string.Empty;
             if (processes.Contains(".mra")) {
-                romname = new Stack<string>(processes.Split("/")).Pop().Replace(".mra", string.Empty).Trim();
+                var processStack = new Stack<string>(processes.Split("/"));
+                if (processStack.Count > 0) {
+                    romname = processStack.Pop().Replace(".mra", "").Trim();
+                }
             } else {
                 var latestFile = GetLatestRecentsFile();
-                if (!string.IsNullOrEmpty(latestFile)) {
-                    romname = Path.GetFileNameWithoutExtension(GetClient().CreateCommand($"strings {latestFile}").Execute().Split('\n')[1]);
+                if (latestFile == null || !string.IsNullOrEmpty(latestFile)) {
+                    romname = Path.GetFileNameWithoutExtension(GetClient().CreateCommand($"strings {latestFile}").Execute().Split('\n')[2]);
                 }
             }
             return romname;
