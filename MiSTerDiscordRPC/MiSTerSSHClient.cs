@@ -1,4 +1,5 @@
 using Renci.SshNet;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -54,11 +55,15 @@ namespace MiSTerDiscordRPC {
 
         private string GetCoreName(string processes) {
             var corename = "";
-            var processStack = new Stack<string>(processes.Split()[8].Split("/"));
-            if (processStack.Count > 0) {
-                corename = processStack.Pop().Replace(".rbf", "").Trim();
-                if (corename.Contains("_")) {
-                    corename = corename.Split("_")[0];
+            var parts = processes.Split();
+            foreach (var part in parts) {
+                if (!part.Contains(".rbf")) continue;
+                var partStack = new Stack<string>(part.Split("/"));
+                if (partStack.Count > 0) {
+                    corename = partStack.Pop().Replace(".rbf", "").Trim();
+                    if (corename.Contains("_")) {
+                        corename = corename.Split("_")[0];
+                    }
                 }
             }
             return corename;
